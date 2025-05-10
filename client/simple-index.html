@@ -544,7 +544,7 @@
         patientData.sendReminder = patientData.sendReminder === 'on';
       }
       
-      fetch('/api/patients', {
+      fetch(`${getBaseUrl()}/api/patients`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -838,12 +838,19 @@
       
       // Load upcoming appointments
       fetch(`${getBaseUrl()}/api/appointments/patient/${patient.id}`)
-        .then(response => response.json())
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Loaded appointments:', data);
           displayUpcomingAppointments(data);
         })
         .catch(error => {
           console.error('Error loading appointments:', error);
+          alert('Failed to load appointments: ' + error.message);
         });
       
       showSection('appointment-section');
@@ -918,7 +925,7 @@
         e.target.reset();
         
         // Reload appointments
-        fetch(`/api/appointments/patient/${selectedPatient.id}`)
+        fetch(`${getBaseUrl()}/api/appointments/patient/${selectedPatient.id}`)
           .then(response => response.json())
           .then(data => {
             displayUpcomingAppointments(data);
@@ -935,7 +942,7 @@
     // Load dashboard data
     function loadDashboardData() {
       // Load metrics
-      fetch('/api/dashboard/metrics')
+      fetch(`${getBaseUrl()}/api/dashboard/metrics`)
         .then(response => response.json())
         .then(data => {
           const metricsRow = document.getElementById('metricsRow');
@@ -992,7 +999,7 @@
         });
       
       // Load gender distribution chart
-      fetch('/api/dashboard/gender-distribution')
+      fetch(`${getBaseUrl()}/api/dashboard/gender-distribution`)
         .then(response => response.json())
         .then(data => {
           const ctx = document.getElementById('genderChart').getContext('2d');
@@ -1023,7 +1030,7 @@
         });
       
       // Load age distribution chart
-      fetch('/api/dashboard/age-distribution')
+      fetch(`${getBaseUrl()}/api/dashboard/age-distribution`)
         .then(response => response.json())
         .then(data => {
           const ctx = document.getElementById('ageChart').getContext('2d');
@@ -1060,7 +1067,7 @@
         });
       
       // Load doctor distribution table
-      fetch('/api/dashboard/doctor-distribution')
+      fetch(`${getBaseUrl()}/api/dashboard/doctor-distribution`)
         .then(response => response.json())
         .then(data => {
           const tableBody = document.getElementById('doctorTableBody');

@@ -51,12 +51,19 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  app.use((err, _req, res, _next) => {
+  app.use((err, req, res, _next) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
-
-    res.status(status).json({ message });
-    console.error(err);
+    
+    console.error(`Error processing ${req.method} ${req.path}:`);
+    console.error(err.stack);
+    
+    res.status(status).json({ 
+      message,
+      path: req.path,
+      method: req.method,
+      timestamp: new Date().toISOString()
+    });
   });
 
   // Serve the static files from the client directory
