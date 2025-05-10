@@ -1,54 +1,53 @@
-import type { Express, Request, Response } from "express";
-import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { createServer } from "http";
+import { storage } from "./storage.js";
 import { z } from "zod";
-import { generatePatientId } from "../client/src/lib/utils";
+// Use the internal function from storage.js
 import { 
   insertPatientSchema,
   insertVitalsSchema,
   insertAppointmentSchema
-} from "@shared/schema";
+} from "../shared/schema.js";
 
-export async function registerRoutes(app: Express): Promise<Server> {
+export async function registerRoutes(app) {
   // Dashboard routes
-  app.get('/api/dashboard/metrics', async (req: Request, res: Response) => {
+  app.get('/api/dashboard/metrics', async (req, res) => {
     try {
       const metrics = await storage.getDashboardMetrics();
       res.json(metrics);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get('/api/dashboard/gender-distribution', async (req: Request, res: Response) => {
+  app.get('/api/dashboard/gender-distribution', async (req, res) => {
     try {
       const genderDistribution = await storage.getGenderDistribution();
       res.json(genderDistribution);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get('/api/dashboard/age-distribution', async (req: Request, res: Response) => {
+  app.get('/api/dashboard/age-distribution', async (req, res) => {
     try {
       const ageDistribution = await storage.getAgeDistribution();
       res.json(ageDistribution);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get('/api/dashboard/doctor-distribution', async (req: Request, res: Response) => {
+  app.get('/api/dashboard/doctor-distribution', async (req, res) => {
     try {
       const doctorDistribution = await storage.getDoctorDistribution();
       res.json(doctorDistribution);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
   // Patient routes
-  app.get('/api/patients', async (req: Request, res: Response) => {
+  app.get('/api/patients', async (req, res) => {
     try {
       const { query } = req.query;
       
@@ -59,17 +58,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const patients = await storage.getPatients();
         res.json(patients);
       }
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.post('/api/patients', async (req: Request, res: Response) => {
+  app.post('/api/patients', async (req, res) => {
     try {
       const validatedData = insertPatientSchema.parse(req.body);
       const patient = await storage.createPatient(validatedData);
       res.status(201).json(patient);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
       } else {
@@ -78,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/patients/:id', async (req: Request, res: Response) => {
+  app.get('/api/patients/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       
@@ -93,22 +92,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(patient);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
   // Doctor routes
-  app.get('/api/doctors', async (req: Request, res: Response) => {
+  app.get('/api/doctors', async (req, res) => {
     try {
       const doctors = await storage.getDoctors();
       res.json(doctors);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get('/api/doctors/:id', async (req: Request, res: Response) => {
+  app.get('/api/doctors/:id', async (req, res) => {
     try {
       const id = parseInt(req.params.id);
       
@@ -123,13 +122,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       res.json(doctor);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
   // Vitals routes
-  app.post('/api/vitals', async (req: Request, res: Response) => {
+  app.post('/api/vitals', async (req, res) => {
     try {
       const validatedData = insertVitalsSchema.parse(req.body);
       
@@ -141,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const vitals = await storage.createVitals(validatedData);
       res.status(201).json(vitals);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
       } else {
@@ -150,7 +149,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/patients/:id/vitals', async (req: Request, res: Response) => {
+  app.get('/api/patients/:id/vitals', async (req, res) => {
     try {
       const patientId = parseInt(req.params.id);
       
@@ -166,13 +165,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const vitals = await storage.getVitals(patientId);
       res.json(vitals);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
   // Appointment routes
-  app.post('/api/appointments', async (req: Request, res: Response) => {
+  app.post('/api/appointments', async (req, res) => {
     try {
       const validatedData = insertAppointmentSchema.parse(req.body);
       
@@ -198,7 +197,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const appointment = await storage.createAppointment(validatedData);
       res.status(201).json(appointment);
-    } catch (error: any) {
+    } catch (error) {
       if (error instanceof z.ZodError) {
         res.status(400).json({ message: error.errors });
       } else {
@@ -207,17 +206,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/appointments', async (req: Request, res: Response) => {
+  app.get('/api/appointments', async (req, res) => {
     try {
       const { date } = req.query;
-      const appointments = await storage.getAppointments(date as string);
+      const appointments = await storage.getAppointments(date);
       res.json(appointments);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  app.get('/api/patients/:id/appointments', async (req: Request, res: Response) => {
+  app.get('/api/patients/:id/appointments', async (req, res) => {
     try {
       const patientId = parseInt(req.params.id);
       
@@ -233,7 +232,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const appointments = await storage.getPatientAppointments(patientId);
       res.json(appointments);
-    } catch (error: any) {
+    } catch (error) {
       res.status(500).json({ message: error.message });
     }
   });

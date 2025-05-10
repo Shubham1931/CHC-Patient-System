@@ -1,52 +1,18 @@
-import { 
-  patients, type Patient, type InsertPatient,
-  doctors, type Doctor, type InsertDoctor,
-  vitals, type Vitals, type InsertVitals,
-  appointments, type Appointment, type InsertAppointment
-} from "@shared/schema";
-import { generatePatientId, getAgeGroup } from "../client/src/lib/utils";
-
-export interface IStorage {
-  // Patient operations
-  getPatients(): Promise<Patient[]>;
-  getPatient(id: number): Promise<Patient | undefined>;
-  getPatientByPatientId(patientId: string): Promise<Patient | undefined>;
-  searchPatients(query: string): Promise<Patient[]>;
-  createPatient(patient: InsertPatient): Promise<Patient>;
-  
-  // Doctor operations
-  getDoctors(): Promise<Doctor[]>;
-  getDoctor(id: number): Promise<Doctor | undefined>;
-  createDoctor(doctor: InsertDoctor): Promise<Doctor>;
-  
-  // Vitals operations
-  getVitals(patientId: number): Promise<Vitals[]>;
-  getLatestVitals(patientId: number): Promise<Vitals | undefined>;
-  createVitals(vitals: InsertVitals): Promise<Vitals>;
-  
-  // Appointment operations
-  getAppointments(date?: string): Promise<Appointment[]>;
-  getPatientAppointments(patientId: number): Promise<Appointment[]>;
-  getDoctorAppointments(doctorId: number, date?: string): Promise<Appointment[]>;
-  createAppointment(appointment: InsertAppointment): Promise<Appointment>;
-  
-  // Dashboard data
-  getDashboardMetrics(): Promise<any>;
-  getGenderDistribution(): Promise<any>;
-  getAgeDistribution(): Promise<any>;
-  getDoctorDistribution(): Promise<any>;
+// Define these functions directly to avoid import issues
+function generatePatientId() {
+  const year = new Date().getFullYear();
+  const randomNum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+  return `CHC-${year}-${randomNum}`;
 }
 
-export class MemStorage implements IStorage {
-  private patients: Map<number, Patient>;
-  private doctors: Map<number, Doctor>;
-  private vitals: Map<number, Vitals>;
-  private appointments: Map<number, Appointment>;
-  private patientIdCounter: number;
-  private doctorIdCounter: number;
-  private vitalsIdCounter: number;
-  private appointmentIdCounter: number;
+function getAgeGroup(age) {
+  if (age <= 12) return "0-12";
+  if (age <= 25) return "13-25";
+  if (age <= 45) return "26-45";
+  return "46+";
+}
 
+export class MemStorage {
   constructor() {
     this.patients = new Map();
     this.doctors = new Map();
@@ -88,21 +54,21 @@ export class MemStorage implements IStorage {
   }
 
   // Patient operations
-  async getPatients(): Promise<Patient[]> {
+  async getPatients() {
     return Array.from(this.patients.values());
   }
 
-  async getPatient(id: number): Promise<Patient | undefined> {
+  async getPatient(id) {
     return this.patients.get(id);
   }
 
-  async getPatientByPatientId(patientId: string): Promise<Patient | undefined> {
+  async getPatientByPatientId(patientId) {
     return Array.from(this.patients.values()).find(
       (patient) => patient.patientId === patientId
     );
   }
 
-  async searchPatients(query: string): Promise<Patient[]> {
+  async searchPatients(query) {
     query = query.toLowerCase();
     return Array.from(this.patients.values()).filter(
       (patient) => 
@@ -112,12 +78,12 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createPatient(insertPatient: InsertPatient): Promise<Patient> {
+  async createPatient(insertPatient) {
     const id = this.patientIdCounter++;
     const patientId = generatePatientId();
     const createdAt = new Date();
     
-    const patient: Patient = { 
+    const patient = { 
       ...insertPatient, 
       id, 
       patientId,
@@ -129,29 +95,29 @@ export class MemStorage implements IStorage {
   }
 
   // Doctor operations
-  async getDoctors(): Promise<Doctor[]> {
+  async getDoctors() {
     return Array.from(this.doctors.values());
   }
 
-  async getDoctor(id: number): Promise<Doctor | undefined> {
+  async getDoctor(id) {
     return this.doctors.get(id);
   }
 
-  async createDoctor(insertDoctor: InsertDoctor): Promise<Doctor> {
+  async createDoctor(insertDoctor) {
     const id = this.doctorIdCounter++;
-    const doctor: Doctor = { ...insertDoctor, id };
+    const doctor = { ...insertDoctor, id };
     this.doctors.set(id, doctor);
     return doctor;
   }
 
   // Vitals operations
-  async getVitals(patientId: number): Promise<Vitals[]> {
+  async getVitals(patientId) {
     return Array.from(this.vitals.values()).filter(
       (vital) => vital.patientId === patientId
     );
   }
 
-  async getLatestVitals(patientId: number): Promise<Vitals | undefined> {
+  async getLatestVitals(patientId) {
     const patientVitals = await this.getVitals(patientId);
     if (patientVitals.length === 0) return undefined;
     
@@ -160,11 +126,11 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async createVitals(insertVitals: InsertVitals): Promise<Vitals> {
+  async createVitals(insertVitals) {
     const id = this.vitalsIdCounter++;
     const createdAt = new Date();
     
-    const vitals: Vitals = { 
+    const vitals = { 
       ...insertVitals, 
       id, 
       createdAt,
@@ -175,7 +141,7 @@ export class MemStorage implements IStorage {
   }
 
   // Appointment operations
-  async getAppointments(date?: string): Promise<Appointment[]> {
+  async getAppointments(date) {
     if (!date) return Array.from(this.appointments.values());
     
     return Array.from(this.appointments.values()).filter(
@@ -183,13 +149,13 @@ export class MemStorage implements IStorage {
     );
   }
 
-  async getPatientAppointments(patientId: number): Promise<Appointment[]> {
+  async getPatientAppointments(patientId) {
     return Array.from(this.appointments.values()).filter(
       (appointment) => appointment.patientId === patientId
     );
   }
 
-  async getDoctorAppointments(doctorId: number, date?: string): Promise<Appointment[]> {
+  async getDoctorAppointments(doctorId, date) {
     let appointments = Array.from(this.appointments.values()).filter(
       (appointment) => appointment.doctorId === doctorId
     );
@@ -203,11 +169,11 @@ export class MemStorage implements IStorage {
     return appointments;
   }
 
-  async createAppointment(insertAppointment: InsertAppointment): Promise<Appointment> {
+  async createAppointment(insertAppointment) {
     const id = this.appointmentIdCounter++;
     const createdAt = new Date();
     
-    const appointment: Appointment = { 
+    const appointment = { 
       ...insertAppointment, 
       id, 
       createdAt,
@@ -218,7 +184,7 @@ export class MemStorage implements IStorage {
   }
 
   // Dashboard data
-  async getDashboardMetrics(): Promise<any> {
+  async getDashboardMetrics() {
     const today = new Date().toISOString().split('T')[0];
     const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
     
@@ -264,7 +230,7 @@ export class MemStorage implements IStorage {
     };
   }
 
-  async getGenderDistribution(): Promise<any> {
+  async getGenderDistribution() {
     const patients = await this.getPatients();
     
     // Count patients by gender
@@ -279,11 +245,11 @@ export class MemStorage implements IStorage {
     ];
   }
 
-  async getAgeDistribution(): Promise<any> {
+  async getAgeDistribution() {
     const patients = await this.getPatients();
     
     // Group patients by age
-    const ageGroups: Record<string, number> = {
+    const ageGroups = {
       '0-12': 0,
       '13-25': 0,
       '26-45': 0,
@@ -309,7 +275,7 @@ export class MemStorage implements IStorage {
     }));
   }
 
-  async getDoctorDistribution(): Promise<any> {
+  async getDoctorDistribution() {
     const doctors = await this.getDoctors();
     const appointments = await this.getAppointments();
     const today = new Date().toISOString().split('T')[0];
