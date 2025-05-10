@@ -582,30 +582,47 @@
       }
     });
 
+    // Get base URL for API calls
+    function getBaseUrl() {
+      return window.location.origin; // This will be 'http://localhost:5000' or whatever your server URL is
+    }
+
     // Search patients by query
     function searchPatients(query) {
-      fetch(`/api/patients/search?q=${encodeURIComponent(query)}`)
-        .then(response => response.json())
+      fetch(`${getBaseUrl()}/api/patients/search?q=${encodeURIComponent(query)}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Search results:', data);
           displayPatients(data);
         })
         .catch(error => {
           console.error('Error searching patients:', error);
-          alert('Failed to search patients');
+          alert('Failed to search patients: ' + error.message);
         });
     }
 
     // Load all patients
     function loadPatients() {
-      fetch('/api/patients')
-        .then(response => response.json())
+      fetch(`${getBaseUrl()}/api/patients`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Loaded patients:', data);
           allPatients = data;
           displayPatients(data);
         })
         .catch(error => {
           console.error('Error loading patients:', error);
-          alert('Failed to load patients');
+          alert('Failed to load patients: ' + error.message);
         });
     }
 
@@ -666,13 +683,20 @@
       document.getElementById('vitalsPatientId').value = patient.id;
       
       // Load previous vitals
-      fetch(`/api/vitals/${patient.id}`)
-        .then(response => response.json())
+      fetch(`${getBaseUrl()}/api/vitals/${patient.id}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Loaded vitals:', data);
           displayPreviousVitals(data);
         })
         .catch(error => {
           console.error('Error loading vitals:', error);
+          alert('Failed to load vitals: ' + error.message);
         });
       
       showSection('vitals-section');
@@ -726,7 +750,7 @@
       const formData = new FormData(e.target);
       const vitalsData = Object.fromEntries(formData.entries());
       
-      fetch('/api/vitals', {
+      fetch(`${getBaseUrl()}/api/vitals`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -744,7 +768,7 @@
         e.target.reset();
         
         // Reload vitals
-        fetch(`/api/vitals/${selectedPatient.id}`)
+        fetch(`${getBaseUrl()}/api/vitals/${selectedPatient.id}`)
           .then(response => response.json())
           .then(data => {
             displayPreviousVitals(data);
@@ -757,9 +781,15 @@
 
     // Load doctors for appointment booking
     function loadDoctors() {
-      fetch('/api/doctors')
-        .then(response => response.json())
+      fetch(`${getBaseUrl()}/api/doctors`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Server returned ${response.status}: ${response.statusText}`);
+          }
+          return response.json();
+        })
         .then(data => {
+          console.log('Loaded doctors:', data);
           allDoctors = data;
           const doctorSelect = document.getElementById('doctorId');
           
@@ -807,7 +837,7 @@
       }
       
       // Load upcoming appointments
-      fetch(`/api/appointments/patient/${patient.id}`)
+      fetch(`${getBaseUrl()}/api/appointments/patient/${patient.id}`)
         .then(response => response.json())
         .then(data => {
           displayUpcomingAppointments(data);
@@ -870,7 +900,7 @@
         appointmentData.sendReminder = appointmentData.sendReminder === 'on';
       }
       
-      fetch('/api/appointments', {
+      fetch(`${getBaseUrl()}/api/appointments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -966,7 +996,13 @@
         .then(response => response.json())
         .then(data => {
           const ctx = document.getElementById('genderChart').getContext('2d');
-          new Chart(ctx, {
+          
+          // Clear any existing chart
+          if (window.genderChart instanceof Chart) {
+            window.genderChart.destroy();
+          }
+          
+          window.genderChart = new Chart(ctx, {
             type: 'pie',
             data: {
               labels: data.map(item => item.name),
@@ -991,7 +1027,13 @@
         .then(response => response.json())
         .then(data => {
           const ctx = document.getElementById('ageChart').getContext('2d');
-          new Chart(ctx, {
+          
+          // Clear any existing chart
+          if (window.ageChart instanceof Chart) {
+            window.ageChart.destroy();
+          }
+          
+          window.ageChart = new Chart(ctx, {
             type: 'bar',
             data: {
               labels: data.map(item => item.name),
