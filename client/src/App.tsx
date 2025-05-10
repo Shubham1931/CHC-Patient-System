@@ -43,7 +43,7 @@ function App() {
           {/* Mobile menu dialog */}
           {isMobile && (
             <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-              <DialogContent className="p-0 max-w-full h-full sm:max-w-full" closeButton={false}>
+              <DialogContent className="p-0 max-w-full h-full sm:max-w-full">
                 <Sidebar isMobile onClose={() => setMobileMenuOpen(false)} />
               </DialogContent>
             </Dialog>

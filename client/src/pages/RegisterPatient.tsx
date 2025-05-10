@@ -205,7 +205,7 @@ export default function RegisterPatient() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Select</SelectItem>
+                            <SelectItem value="none">Select</SelectItem>
                             <SelectItem value="A+">A+</SelectItem>
                             <SelectItem value="A-">A-</SelectItem>
                             <SelectItem value="B+">B+</SelectItem>

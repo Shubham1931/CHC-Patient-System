@@ -166,7 +166,7 @@ export default function BookAppointment() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Select department</SelectItem>
+                            <SelectItem value="none">Select department</SelectItem>
                             <SelectItem value="General Medicine">General Medicine</SelectItem>
                             <SelectItem value="Pediatrics">Pediatrics</SelectItem>
                             <SelectItem value="Orthopedics">Orthopedics</SelectItem>
@@ -194,9 +194,9 @@ export default function BookAppointment() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Select doctor</SelectItem>
+                            <SelectItem value="none">Select doctor</SelectItem>
                             {doctorsLoading ? (
-                              <SelectItem value="" disabled>Loading doctors...</SelectItem>
+                              <SelectItem value="loading" disabled>Loading doctors...</SelectItem>
                             ) : filteredDoctors && filteredDoctors.length > 0 ? (
                               filteredDoctors.map((doctor: any) => (
                                 <SelectItem key={doctor.id} value={doctor.id.toString()}>
@@ -204,7 +204,7 @@ export default function BookAppointment() {
                                 </SelectItem>
                               ))
                             ) : (
-                              <SelectItem value="" disabled>
+                              <SelectItem value="no-doctors" disabled>
                                 {department ? "No doctors in selected department" : "No doctors available"}
                               </SelectItem>
                             )}
@@ -248,7 +248,7 @@ export default function BookAppointment() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">Select time slot</SelectItem>
+                            <SelectItem value="none">Select time slot</SelectItem>
                             <SelectItem value="09:00">09:00 AM - 09:15 AM</SelectItem>
                             <SelectItem value="09:15">09:15 AM - 09:30 AM</SelectItem>
                             <SelectItem value="09:30">09:30 AM - 09:45 AM</SelectItem>
