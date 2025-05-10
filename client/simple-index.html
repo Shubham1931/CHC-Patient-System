@@ -213,29 +213,255 @@
 
     <div id="search-section" style="display: none;">
       <h1 class="h3 mb-4">Search Patients</h1>
-      <!-- Search form will go here -->
+      <div class="card mb-4">
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <input type="text" class="form-control" id="searchQuery" placeholder="Search by name, ID or phone">
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary w-100" id="searchBtn">Search</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>Patient Records</div>
+          <div class="text-muted small">Showing <span id="patientCount">0</span> patients</div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Patient ID</th>
+                  <th>Name</th>
+                  <th>Gender</th>
+                  <th>Age</th>
+                  <th>Phone</th>
+                  <th>Registered</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="patientTableBody">
+                <!-- Patient data will be inserted here -->
+              </tbody>
+            </table>
+          </div>
+          <div id="noPatients" class="text-center py-4 d-none">
+            <div class="text-muted">No patients found</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="vitals-section" style="display: none;">
       <h1 class="h3 mb-4">Record Vitals</h1>
-      <!-- Vitals form will go here -->
+      <div class="card">
+        <div class="card-body">
+          <div class="mb-4">
+            <div class="alert alert-info" id="patientInfo">
+              Please select a patient from the search page first
+            </div>
+          </div>
+          
+          <form id="vitalsForm">
+            <input type="hidden" id="vitalsPatientId" name="patientId">
+            
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="temperature" class="form-label">Temperature (°C) *</label>
+                <input type="text" class="form-control" id="temperature" name="temperature" required>
+              </div>
+              <div class="col-md-3">
+                <label for="bloodPressureSystolic" class="form-label">BP - Systolic (mmHg) *</label>
+                <input type="number" class="form-control" id="bloodPressureSystolic" name="bloodPressureSystolic" min="60" required>
+              </div>
+              <div class="col-md-3">
+                <label for="bloodPressureDiastolic" class="form-label">BP - Diastolic (mmHg) *</label>
+                <input type="number" class="form-control" id="bloodPressureDiastolic" name="bloodPressureDiastolic" min="40" required>
+              </div>
+              <div class="col-md-3">
+                <label for="heartRate" class="form-label">Heart Rate (BPM) *</label>
+                <input type="number" class="form-control" id="heartRate" name="heartRate" min="30" required>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-3">
+                <label for="respiratoryRate" class="form-label">Respiratory Rate</label>
+                <input type="number" class="form-control" id="respiratoryRate" name="respiratoryRate">
+              </div>
+              <div class="col-md-3">
+                <label for="oxygenSaturation" class="form-label">Oxygen Saturation (%)</label>
+                <input type="number" class="form-control" id="oxygenSaturation" name="oxygenSaturation" min="0" max="100">
+              </div>
+              <div class="col-md-3">
+                <label for="weight" class="form-label">Weight (kg)</label>
+                <input type="text" class="form-control" id="weight" name="weight">
+              </div>
+              <div class="col-md-3">
+                <label for="height" class="form-label">Height (cm)</label>
+                <input type="text" class="form-control" id="height" name="height">
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="bloodGlucose" class="form-label">Blood Glucose (mg/dL)</label>
+              <input type="text" class="form-control" id="bloodGlucose" name="bloodGlucose">
+            </div>
+            
+            <div class="mb-3">
+              <label for="notes" class="form-label">Notes</label>
+              <textarea class="form-control" id="notes" name="notes" rows="2"></textarea>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary" id="resetVitalsBtn">Reset Form</button>
+              <button type="submit" class="btn btn-primary" id="submitVitalsBtn">Record Vitals</button>
+            </div>
+          </form>
+          
+          <div class="mt-4 pt-4 border-top" id="previousVitalsSection" style="display: none;">
+            <h4 class="h5 mb-3">Previous Vitals Records</h4>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Temperature</th>
+                    <th>Blood Pressure</th>
+                    <th>Heart Rate</th>
+                    <th>Other Readings</th>
+                  </tr>
+                </thead>
+                <tbody id="previousVitalsBody">
+                  <!-- Previous vitals will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="appointment-section" style="display: none;">
       <h1 class="h3 mb-4">Book Appointment</h1>
-      <!-- Appointment form will go here -->
+      <div class="card">
+        <div class="card-body">
+          <div class="mb-4">
+            <div class="alert alert-info" id="appointmentPatientInfo">
+              Please select a patient from the search page first
+            </div>
+          </div>
+          
+          <form id="appointmentForm">
+            <input type="hidden" id="appointmentPatientId" name="patientId">
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="doctorId" class="form-label">Select Doctor *</label>
+                <select class="form-select" id="doctorId" name="doctorId" required>
+                  <option value="">Choose a doctor</option>
+                  <!-- Doctors will be inserted here -->
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="department" class="form-label">Department</label>
+                <input type="text" class="form-control" id="department" readonly>
+              </div>
+            </div>
+            
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="appointmentDate" class="form-label">Appointment Date *</label>
+                <input type="date" class="form-control" id="appointmentDate" name="appointmentDate" required>
+              </div>
+              <div class="col-md-6">
+                <label for="appointmentTime" class="form-label">Appointment Time *</label>
+                <select class="form-select" id="appointmentTime" name="appointmentTime" required>
+                  <option value="">Select time slot</option>
+                  <option value="09:00">9:00 AM</option>
+                  <option value="09:30">9:30 AM</option>
+                  <option value="10:00">10:00 AM</option>
+                  <option value="10:30">10:30 AM</option>
+                  <option value="11:00">11:00 AM</option>
+                  <option value="11:30">11:30 AM</option>
+                  <option value="12:00">12:00 PM</option>
+                  <option value="12:30">12:30 PM</option>
+                  <option value="14:00">2:00 PM</option>
+                  <option value="14:30">2:30 PM</option>
+                  <option value="15:00">3:00 PM</option>
+                  <option value="15:30">3:30 PM</option>
+                  <option value="16:00">4:00 PM</option>
+                </select>
+              </div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="reason" class="form-label">Reason for Visit *</label>
+              <textarea class="form-control" id="reason" name="reason" rows="2" required></textarea>
+            </div>
+            
+            <div class="mb-3">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="sendReminder" name="sendReminder">
+                <label class="form-check-label" for="sendReminder">
+                  Send appointment reminder to patient
+                </label>
+              </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-2 mt-4">
+              <button type="button" class="btn btn-outline-secondary" id="cancelAppointmentBtn">Cancel</button>
+              <button type="submit" class="btn btn-primary" id="bookAppointmentBtn">Book Appointment</button>
+            </div>
+          </form>
+          
+          <div class="mt-4 pt-4 border-top" id="upcomingAppointmentsSection" style="display: none;">
+            <h4 class="h5 mb-3">Upcoming Appointments</h4>
+            <div class="table-responsive">
+              <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Doctor</th>
+                    <th>Department</th>
+                    <th>Reason</th>
+                  </tr>
+                </thead>
+                <tbody id="upcomingAppointmentsBody">
+                  <!-- Upcoming appointments will be inserted here -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
+    // Global variables for patient data management
+    let selectedPatient = null;
+    let allPatients = [];
+    let allDoctors = [];
+
     // Set current date
     document.getElementById('currentDate').innerText = new Date().toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
+
+    // Set minimum date for appointment date picker to today
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('appointmentDate').min = today;
 
     // Navigation
     document.getElementById('registerPatientLink').addEventListener('click', function(e) {
@@ -246,6 +472,7 @@
     document.getElementById('searchPatientsLink').addEventListener('click', function(e) {
       e.preventDefault();
       showSection('search-section');
+      loadPatients();
     });
 
     document.getElementById('recordVitalsLink').addEventListener('click', function(e) {
@@ -256,6 +483,7 @@
     document.getElementById('bookAppointmentLink').addEventListener('click', function(e) {
       e.preventDefault();
       showSection('appointment-section');
+      loadDoctors();
     });
 
     // Helper function to show the selected section and hide others
@@ -264,6 +492,32 @@
       sections.forEach(section => {
         document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
       });
+
+      // Update active navigation link
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+      
+      // Map section IDs to navigation link IDs
+      const navMap = {
+        'dashboard-section': '.navbar-brand',
+        'register-section': '#registerPatientLink',
+        'search-section': '#searchPatientsLink',
+        'vitals-section': '#recordVitalsLink',
+        'appointment-section': '#bookAppointmentLink'
+      };
+      
+      // Set active class on the corresponding navigation link
+      if (navMap[sectionId]) {
+        document.querySelector(navMap[sectionId]).classList.add('active');
+      }
+    }
+
+    // Format date for display
+    function formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const options = { year: 'numeric', month: 'short', day: 'numeric' };
+      return new Date(dateString).toLocaleDateString('en-US', options);
     }
 
     // Patient registration
@@ -272,6 +526,11 @@
       
       const formData = new FormData(e.target);
       const patientData = Object.fromEntries(formData.entries());
+      
+      // Convert checkbox values to boolean
+      if (patientData.sendReminder) {
+        patientData.sendReminder = patientData.sendReminder === 'on';
+      }
       
       fetch('/api/patients', {
         method: 'POST',
@@ -290,6 +549,7 @@
         alert('Patient registered successfully!');
         e.target.reset();
         showSection('search-section');
+        loadPatients();
       })
       .catch(error => {
         alert(`Error: ${error.message}`);
@@ -298,6 +558,333 @@
 
     document.getElementById('resetFormBtn').addEventListener('click', function() {
       document.getElementById('patientRegistrationForm').reset();
+    });
+
+    // Search functionality
+    document.getElementById('searchBtn').addEventListener('click', function() {
+      const query = document.getElementById('searchQuery').value.trim();
+      if (query) {
+        searchPatients(query);
+      } else {
+        loadPatients();
+      }
+    });
+
+    // Search patients by query
+    function searchPatients(query) {
+      fetch(`/api/patients/search?q=${encodeURIComponent(query)}`)
+        .then(response => response.json())
+        .then(data => {
+          displayPatients(data);
+        })
+        .catch(error => {
+          console.error('Error searching patients:', error);
+          alert('Failed to search patients');
+        });
+    }
+
+    // Load all patients
+    function loadPatients() {
+      fetch('/api/patients')
+        .then(response => response.json())
+        .then(data => {
+          allPatients = data;
+          displayPatients(data);
+        })
+        .catch(error => {
+          console.error('Error loading patients:', error);
+          alert('Failed to load patients');
+        });
+    }
+
+    // Display patients in the search table
+    function displayPatients(patients) {
+      const tableBody = document.getElementById('patientTableBody');
+      const noPatients = document.getElementById('noPatients');
+      const patientCount = document.getElementById('patientCount');
+      
+      tableBody.innerHTML = '';
+      patientCount.textContent = patients.length;
+      
+      if (patients.length === 0) {
+        noPatients.classList.remove('d-none');
+        return;
+      }
+      
+      noPatients.classList.add('d-none');
+      
+      patients.forEach(patient => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${patient.patientId}</td>
+          <td>${patient.name}</td>
+          <td>${patient.gender}</td>
+          <td>${patient.age}</td>
+          <td>${patient.phone}</td>
+          <td>${formatDate(patient.createdAt)}</td>
+          <td>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-primary record-vitals" data-id="${patient.id}">Vitals</button>
+              <button class="btn btn-secondary book-appointment" data-id="${patient.id}">Appointment</button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(tr);
+        
+        // Add event listeners to the buttons
+        tr.querySelector('.record-vitals').addEventListener('click', function() {
+          const patientId = this.getAttribute('data-id');
+          selectPatientForVitals(parseInt(patientId));
+        });
+        
+        tr.querySelector('.book-appointment').addEventListener('click', function() {
+          const patientId = this.getAttribute('data-id');
+          selectPatientForAppointment(parseInt(patientId));
+        });
+      });
+    }
+
+    // Select a patient for recording vitals
+    function selectPatientForVitals(patientId) {
+      const patient = allPatients.find(p => p.id === patientId);
+      if (!patient) return;
+      
+      selectedPatient = patient;
+      document.getElementById('patientInfo').textContent = `Patient: ${patient.name} (${patient.patientId}) - ${patient.age} years, ${patient.gender}`;
+      document.getElementById('vitalsPatientId').value = patient.id;
+      
+      // Load previous vitals
+      fetch(`/api/vitals/${patient.id}`)
+        .then(response => response.json())
+        .then(data => {
+          displayPreviousVitals(data);
+        })
+        .catch(error => {
+          console.error('Error loading vitals:', error);
+        });
+      
+      showSection('vitals-section');
+    }
+
+    // Display previous vitals records
+    function displayPreviousVitals(vitalsRecords) {
+      const vitalsSection = document.getElementById('previousVitalsSection');
+      const vitalsBody = document.getElementById('previousVitalsBody');
+      
+      if (vitalsRecords.length === 0) {
+        vitalsSection.style.display = 'none';
+        return;
+      }
+      
+      vitalsSection.style.display = 'block';
+      vitalsBody.innerHTML = '';
+      
+      vitalsRecords.forEach(record => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formatDate(record.createdAt)}</td>
+          <td>${record.temperature} °C</td>
+          <td>${record.bloodPressureSystolic}/${record.bloodPressureDiastolic} mmHg</td>
+          <td>${record.heartRate} BPM</td>
+          <td>
+            ${record.respiratoryRate ? `Resp: ${record.respiratoryRate}<br>` : ''}
+            ${record.oxygenSaturation ? `O₂: ${record.oxygenSaturation}%<br>` : ''}
+            ${record.weight ? `Weight: ${record.weight}<br>` : ''}
+            ${record.height ? `Height: ${record.height}` : ''}
+          </td>
+        `;
+        vitalsBody.appendChild(tr);
+      });
+    }
+
+    // Reset vitals form
+    document.getElementById('resetVitalsBtn').addEventListener('click', function() {
+      document.getElementById('vitalsForm').reset();
+    });
+
+    // Submit vitals form
+    document.getElementById('vitalsForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (!selectedPatient) {
+        alert('Please select a patient first');
+        return;
+      }
+      
+      const formData = new FormData(e.target);
+      const vitalsData = Object.fromEntries(formData.entries());
+      
+      fetch('/api/vitals', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(vitalsData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to record vitals');
+        }
+        return response.json();
+      })
+      .then(data => {
+        alert('Vitals recorded successfully!');
+        e.target.reset();
+        
+        // Reload vitals
+        fetch(`/api/vitals/${selectedPatient.id}`)
+          .then(response => response.json())
+          .then(data => {
+            displayPreviousVitals(data);
+          });
+      })
+      .catch(error => {
+        alert(`Error: ${error.message}`);
+      });
+    });
+
+    // Load doctors for appointment booking
+    function loadDoctors() {
+      fetch('/api/doctors')
+        .then(response => response.json())
+        .then(data => {
+          allDoctors = data;
+          const doctorSelect = document.getElementById('doctorId');
+          
+          // Clear existing options except the first one
+          while (doctorSelect.options.length > 1) {
+            doctorSelect.remove(1);
+          }
+          
+          // Add doctor options
+          data.forEach(doctor => {
+            const option = document.createElement('option');
+            option.value = doctor.id;
+            option.textContent = `${doctor.name} (${doctor.department})`;
+            option.setAttribute('data-department', doctor.department);
+            doctorSelect.appendChild(option);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading doctors:', error);
+        });
+    }
+
+    // Update department when doctor is selected
+    document.getElementById('doctorId').addEventListener('change', function() {
+      const selectedOption = this.options[this.selectedIndex];
+      if (selectedOption.value) {
+        document.getElementById('department').value = selectedOption.getAttribute('data-department');
+      } else {
+        document.getElementById('department').value = '';
+      }
+    });
+
+    // Select a patient for booking appointment
+    function selectPatientForAppointment(patientId) {
+      const patient = allPatients.find(p => p.id === patientId);
+      if (!patient) return;
+      
+      selectedPatient = patient;
+      document.getElementById('appointmentPatientInfo').textContent = `Patient: ${patient.name} (${patient.patientId}) - ${patient.age} years, ${patient.gender}`;
+      document.getElementById('appointmentPatientId').value = patient.id;
+      
+      // Load doctor list if not already loaded
+      if (allDoctors.length === 0) {
+        loadDoctors();
+      }
+      
+      // Load upcoming appointments
+      fetch(`/api/appointments/patient/${patient.id}`)
+        .then(response => response.json())
+        .then(data => {
+          displayUpcomingAppointments(data);
+        })
+        .catch(error => {
+          console.error('Error loading appointments:', error);
+        });
+      
+      showSection('appointment-section');
+    }
+
+    // Display upcoming appointments
+    function displayUpcomingAppointments(appointments) {
+      const appointmentsSection = document.getElementById('upcomingAppointmentsSection');
+      const appointmentsBody = document.getElementById('upcomingAppointmentsBody');
+      
+      if (appointments.length === 0) {
+        appointmentsSection.style.display = 'none';
+        return;
+      }
+      
+      appointmentsSection.style.display = 'block';
+      appointmentsBody.innerHTML = '';
+      
+      appointments.forEach(appointment => {
+        const doctor = allDoctors.find(d => d.id === appointment.doctorId) || { name: 'Unknown', department: 'Unknown' };
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${formatDate(appointment.appointmentDate)}</td>
+          <td>${appointment.appointmentTime}</td>
+          <td>${doctor.name}</td>
+          <td>${doctor.department}</td>
+          <td>${appointment.reason}</td>
+        `;
+        appointmentsBody.appendChild(tr);
+      });
+    }
+
+    // Cancel appointment booking
+    document.getElementById('cancelAppointmentBtn').addEventListener('click', function() {
+      document.getElementById('appointmentForm').reset();
+      showSection('search-section');
+    });
+
+    // Submit appointment form
+    document.getElementById('appointmentForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      if (!selectedPatient) {
+        alert('Please select a patient first');
+        return;
+      }
+      
+      const formData = new FormData(e.target);
+      const appointmentData = Object.fromEntries(formData.entries());
+      
+      // Convert checkbox values to boolean
+      if (appointmentData.sendReminder) {
+        appointmentData.sendReminder = appointmentData.sendReminder === 'on';
+      }
+      
+      fetch('/api/appointments', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(appointmentData)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to book appointment');
+        }
+        return response.json();
+      })
+      .then(data => {
+        alert('Appointment booked successfully!');
+        e.target.reset();
+        
+        // Reload appointments
+        fetch(`/api/appointments/patient/${selectedPatient.id}`)
+          .then(response => response.json())
+          .then(data => {
+            displayUpcomingAppointments(data);
+          });
+      })
+      .catch(error => {
+        alert(`Error: ${error.message}`);
+      });
     });
 
     // Refresh dashboard data

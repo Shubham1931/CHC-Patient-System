@@ -130,9 +130,14 @@ app.get('/api/dashboard/doctor-distribution', (req, res) => {
 // Serve the static files from the client directory
 app.use(express.static(path.join(__dirname, 'client')));
 
+// Serve the simple HTML version
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'simple-index.html'));
+});
+
 // Catch-all route for client-side routing
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client', 'index.html'));
+  res.sendFile(path.join(__dirname, 'client', 'simple-index.html'));
 });
 
 // Start the server

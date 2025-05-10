@@ -169,6 +169,27 @@ export async function registerRoutes(app) {
       res.status(500).json({ message: error.message });
     }
   });
+  
+  app.get('/api/vitals/:patientId', async (req, res) => {
+    try {
+      const patientId = parseInt(req.params.patientId);
+      
+      if (isNaN(patientId)) {
+        return res.status(400).json({ message: 'Invalid patient ID' });
+      }
+      
+      // Verify patient exists
+      const patient = await storage.getPatient(patientId);
+      if (!patient) {
+        return res.status(404).json({ message: 'Patient not found' });
+      }
+      
+      const vitals = await storage.getVitals(patientId);
+      res.json(vitals);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
 
   // Appointment routes
   app.post('/api/appointments', async (req, res) => {
@@ -232,6 +253,42 @@ export async function registerRoutes(app) {
       
       const appointments = await storage.getPatientAppointments(patientId);
       res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.get('/api/appointments/patient/:patientId', async (req, res) => {
+    try {
+      const patientId = parseInt(req.params.patientId);
+      
+      if (isNaN(patientId)) {
+        return res.status(400).json({ message: 'Invalid patient ID' });
+      }
+      
+      // Verify patient exists
+      const patient = await storage.getPatient(patientId);
+      if (!patient) {
+        return res.status(404).json({ message: 'Patient not found' });
+      }
+      
+      const appointments = await storage.getPatientAppointments(patientId);
+      res.json(appointments);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  app.get('/api/patients/search', async (req, res) => {
+    try {
+      const { q } = req.query;
+      
+      if (!q || typeof q !== 'string') {
+        return res.status(400).json({ message: 'Search query is required' });
+      }
+      
+      const patients = await storage.searchPatients(q);
+      res.json(patients);
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
