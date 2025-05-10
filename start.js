@@ -1,0 +1,83 @@
+// Simple start script that doesn't rely on environment variables
+import express from 'express';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import path from 'path';
+import { registerRoutes } from './server/routes.js';
+
+// Get the directory name
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Create Express application
+const app = express();
+const port = 5000;
+
+// Middleware for JSON and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Logging middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  const path = req.path;
+  let capturedJsonResponse = undefined;
+
+  const originalResJson = res.json;
+  res.json = function (bodyJson, ...args) {
+    capturedJsonResponse = bodyJson;
+    return originalResJson.apply(res, [bodyJson, ...args]);
+  };
+
+  res.on("finish", () => {
+    const duration = Date.now() - start;
+    if (path.startsWith("/api")) {
+      let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
+      if (capturedJsonResponse) {
+        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+      }
+
+      if (logLine.length > 80) {
+        logLine = logLine.slice(0, 79) + "…";
+      }
+
+      console.log(logLine);
+    }
+  });
+
+  next();
+});
+
+(async () => {
+  const server = await registerRoutes(app);
+
+  app.use((err, _req, res, _next) => {
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+
+    res.status(status).json({ message });
+    console.error(err);
+  });
+
+  // Serve the static files from the client directory
+  app.use(express.static(path.join(__dirname, 'client')));
+  
+  // Serve the simple HTML version
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'simple-index.html'));
+  });
+
+  // Catch-all route for client-side routing
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client', 'simple-index.html'));
+  });
+
+  // ALWAYS serve the app on port 5000
+  // this serves both the API and the client.
+  server.listen({
+    port,
+    host: "0.0.0.0",
+  }, () => {
+    console.log(`Server running on port ${port}`);
+  });
+})();
