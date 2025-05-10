@@ -19,7 +19,47 @@ A digital patient registration and management system designed for Government Com
 - Chart.js for data visualization
 - In-memory data store (with optional PostgreSQL support)
 
-## Running the Application
+## Deployment Options
+
+### Option 1: Deploy to Vercel
+
+1. **Install Vercel CLI**:
+   ```
+   npm install -g vercel
+   ```
+
+2. **Login to Vercel**:
+   ```
+   vercel login
+   ```
+
+3. **Deploy to Vercel**:
+   Navigate to your project directory and run:
+   ```
+   vercel
+   ```
+
+4. **For Production Deployment**:
+   ```
+   vercel --prod
+   ```
+
+5. **Environment Variables**:
+   If you want to use a PostgreSQL database, add the `DATABASE_URL` environment variable in the Vercel project settings.
+
+### Option 2: Traditional Hosting
+
+1. Clone the repository
+2. Install dependencies:
+   ```
+   npm install
+   ```
+3. Start the server:
+   ```
+   node start.js
+   ```
+
+## Running Locally
 
 ### Prerequisites
 
@@ -61,6 +101,7 @@ A digital patient registration and management system designed for Government Com
 - `server/storage.js` - Data storage and retrieval logic
 - `client/simple-index.html` - Main UI for the application
 - `start.bat` / `start.sh` - Scripts to easily start the application
+- `vercel.json` - Configuration for Vercel deployment
 
 ## Using the Application
 
